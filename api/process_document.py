@@ -3,8 +3,10 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import requests
 import json
+import os
 from google.cloud import documentai_v1 as documentai
 from google.cloud.documentai_v1 import types
+from manage_processor import enable_document_ai_processor, disable_document_ai_processor, get_processor_name, get_processor_status
 
 # --- Pydantic Model for Request Validation ---
 class DocumentRequest(BaseModel):
@@ -19,10 +21,10 @@ app = FastAPI()
 # I will include it here for clarity, but in the notebook, it should be defined before this cell.
 # If it's already defined and working in a previous cell, you can remove this definition.
 
-# --- Configuração (substitua pelos seus valores) ---
-project_id = 'soy-involution-472704-t3'  # Seu ID de projeto
-location = 'us'  # A região do seu processador
-processor_id = 'd67df7340ec526b5' # O ID do seu processador implantado
+# --- Configuração via variáveis de ambiente ---
+project_id = os.getenv('GOOGLE_CLOUD_PROJECT', 'soy-involution-472704-t3')
+location = os.getenv('DOCUMENT_AI_LOCATION', 'us')
+processor_id = os.getenv('DOCUMENT_AI_PROCESSOR_ID', 'd67df7340ec526b5')
 
 
 def process_document_sample(project_id: str, location: str, processor_id: str, file_path: str, mime_type: str):
@@ -111,10 +113,31 @@ async def process_document_api(request_data: DocumentRequest):
     except Exception as e:
         return JSONResponse(content={"error": f"Erro ao processar o documento: {e}"}, status_code=500)
 
-# To run the FastAPI app with uvicorn, you would typically use:
-# import uvicorn
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=5000)
+# --- Processor Management Endpoints ---
+@app.post("/enable_processor")
+async def enable_processor():
+    try:
+        enable_document_ai_processor(project_id, location, processor_id)
+        return JSONResponse(content={"status": "Processador ativado com sucesso"}, status_code=200)
+    except Exception as e:
+        return JSONResponse(content={"error": f"Erro ao ativar processador: {e}"}, status_code=500)
 
-# In a Colab environment, you might need to use a different approach to expose the port,
-# potentially involving tools like ngrok, as shown in the original notebook.
+@app.post("/disable_processor")
+async def disable_processor():
+    try:
+        disable_document_ai_processor(project_id, location, processor_id)
+        return JSONResponse(content={"status": "Processador desativado com sucesso"}, status_code=200)
+    except Exception as e:
+        return JSONResponse(content={"error": f"Erro ao desativar processador: {e}"}, status_code=500)
+
+@app.get("/processor_status")
+async def get_processor_status_endpoint():
+    try:
+        status = get_processor_status(project_id, location, processor_id)
+        return JSONResponse(content=status, status_code=200)
+    except Exception as e:
+        return JSONResponse(content={"error": f"Erro ao obter status do processador: {e}"}, status_code=500)
+
+# Vercel serverless function handler
+from mangum import Mangum
+handler = Mangum(app)

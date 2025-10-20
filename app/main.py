@@ -1,4 +1,6 @@
 import os
+
+
 import requests
 import json # Importar a biblioteca json
 from google.cloud import documentai_v1 as documentai
