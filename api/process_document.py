@@ -4,9 +4,17 @@ from pydantic import BaseModel
 import requests
 import json
 import os
+import sys
 from google.cloud import documentai_v1 as documentai
 from google.cloud.documentai_v1 import types
 from manage_processor import enable_document_ai_processor, disable_document_ai_processor, get_processor_name, get_processor_status
+
+# Adicionar o diretório pai ao sys.path para importar conecta_google
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from app.conecta_google import configurar_credenciais_google
+
+# Configurar credenciais do Google Cloud
+configurar_credenciais_google()
 
 # --- Pydantic Model for Request Validation ---
 class DocumentRequest(BaseModel):

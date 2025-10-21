@@ -1,10 +1,16 @@
 import os
-
-
+import sys
 import requests
-import json # Importar a biblioteca json
+import json
 from google.cloud import documentai_v1 as documentai
 from google.cloud.documentai_v1 import types
+
+# Adicionar o diretório pai ao sys.path para importar conecta_google
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from app.conecta_google import configurar_credenciais_google
+
+# Configurar credenciais do Google Cloud
+configurar_credenciais_google()
 
 
 # --- Configuração (substitua pelos seus valores) ---

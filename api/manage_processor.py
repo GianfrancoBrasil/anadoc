@@ -1,7 +1,15 @@
 # Funções utilitárias para gerenciamento de processadores Document AI
 import os
 import logging
+import sys
 from google.cloud import documentai_v1 as documentai
+
+# Adicionar o diretório pai ao sys.path para importar conecta_google
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from app.conecta_google import configurar_credenciais_google
+
+# Configurar credenciais do Google Cloud
+configurar_credenciais_google()
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
