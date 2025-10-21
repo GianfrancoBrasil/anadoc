@@ -1,23 +1,8 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/process_document.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "api/process_document.py"
-    }
-  ],
   "functions": {
     "api/process_document.py": {
       "runtime": "python3.9"
     }
-  },
-  "env": {
-    "GOOGLE_APPLICATION_CREDENTIALS": "@google-credentials.json"
   }
 }
