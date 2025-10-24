@@ -1,4 +1,11 @@
 from fastapi import FastAPI
+# TESTE DA API - Desativar depois
+app = FastAPI()  # precisa vir antes de qualquer @app.get/@app.post
+@app.get("/")
+def health():
+    return {"ok": True, "where": "/api/process_document"}
+
+
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import requests
@@ -8,13 +15,6 @@ import sys
 from google.cloud import documentai_v1 as documentai
 from google.cloud.documentai_v1 import types
 from manage_processor import enable_document_ai_processor, disable_document_ai_processor, get_processor_name, get_processor_status
-
-# TESTE DA API - Desativar depois
-app = FastAPI()  # precisa vir antes de qualquer @app.get/@app.post
-@app.get("/")
-def health():
-    return {"ok": True, "where": "/api/process_document"}
-
 
 # Adicionar o diretório pai ao sys.path para importar conecta_google
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
