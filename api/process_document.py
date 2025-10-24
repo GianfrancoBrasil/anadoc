@@ -1,3 +1,7 @@
+@app.get("/")
+def health():
+    return {"ok": True, "where": "/api/process_document"}
+
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
