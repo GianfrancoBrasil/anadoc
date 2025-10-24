@@ -1,7 +1,3 @@
-@app.get("/")
-def health():
-    return {"ok": True, "where": "/api/process_document"}
-
 from fastapi import FastAPI
 # TESTE DA API - Desativar depois
 app = FastAPI()  # precisa vir antes de qualquer @app.get/@app.post
