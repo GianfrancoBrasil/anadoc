@@ -1,4 +1,11 @@
 from fastapi import FastAPI
+# TESTE DA API - Desativar depois
+app = FastAPI()  # precisa vir antes de qualquer @app.get/@app.post
+@app.get("/")
+def health():
+    return {"ok": True, "where": "/api/process_document"}
+
+
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import requests
@@ -22,7 +29,7 @@ class DocumentRequest(BaseModel):
     additional_text: str = None # additional_text is optional
 
 # --- FastAPI Application Instance ---
-app = FastAPI()
+# --- app = FastAPI() inserido no início
 
 # --- Document AI Processing Function (from previous cell) ---
 # Ensure this function is defined in a previous cell or included here
