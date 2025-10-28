@@ -1,7 +1,9 @@
+import json
 import os
 from fastapi import FastAPI, HTTPException
 from google.cloud import documentai_v1 as documentai
-#from dotenv import load_dotenv # Para carregar variáveis de ambiente localmente
+from google.oauth2 import service_account
+# from dotenv import load_dotenv # Para carregar variáveis de ambiente localmente
 
 # Carrega variáveis de ambiente do arquivo .env (apenas para desenvolvimento local)
 #load_dotenv()
@@ -15,22 +17,26 @@ app = FastAPI()
 # GOOGLE_CLOUD_PROJECT_ID="soy-involution-472704-t3"
 # GOOGLE_CLOUD_LOCATION="us"
 # GOOGLE_CLOUD_PROCESSOR_ID="SEU_PROCESSOR_ID_AQUI" (ex: d67df7340ec526b5)
-# GOOGLE_APPLICATION_CREDENTIALS="/vercel/path/to/credentials.json" (ou caminho local)
+# GCP_KEY_JSON="conteúdo do JSON de credenciais como string"
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT_ID")
 LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION")
 PROCESSOR_ID = os.getenv("GOOGLE_CLOUD_PROCESSOR_ID")
+GCP_KEY_JSON = os.getenv("GCP_KEY_JSON")
 
 # --- Validação de Configuração ---
-if not all([PROJECT_ID, LOCATION, PROCESSOR_ID]):
+if not all([PROJECT_ID, LOCATION, PROCESSOR_ID, GCP_KEY_JSON]):
     raise ValueError(
-        "As variáveis de ambiente GOOGLE_CLOUD_PROJECT_ID, GOOGLE_CLOUD_LOCATION "
-        "e GOOGLE_CLOUD_PROCESSOR_ID devem ser definidas."
+        "As variáveis de ambiente GOOGLE_CLOUD_PROJECT_ID, GOOGLE_CLOUD_LOCATION, "
+        "GOOGLE_CLOUD_PROCESSOR_ID e GCP_KEY_JSON devem ser definidas."
     )
+
+# --- Autenticação Google Cloud ---
+credentials = service_account.Credentials.from_service_account_info(json.loads(GCP_KEY_JSON))
 
 # --- Cliente Document AI (instanciado uma vez por cold start da função) ---
 # O cliente será reutilizado para requisições subsequentes dentro da mesma execução da função serverless.
-documentai_client = documentai.DocumentProcessorServiceClient()
+documentai_client = documentai.DocumentProcessorServiceClient(credentials=credentials)
 
 @app.get("/")
 async def read_root():
