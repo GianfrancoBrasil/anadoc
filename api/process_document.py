@@ -1,9 +1,23 @@
-from fastapi import FastAPI
-# TESTE DA API - Desativar depois
-app = FastAPI()  # precisa vir antes de qualquer @app.get/@app.post
+# topo do arquivo
+from fastapi import FastAPI, HTTPException
+import os, json, logging
+from google.oauth2 import service_account
+
+app = FastAPI()
+
 @app.get("/")
 def health():
     return {"ok": True, "where": "/api/process_document"}
+
+def get_gcp_credentials():
+    """Lê a credencial da ENV GCP_KEY_JSON e cria Credentials.
+       NÃO chama nada de Google fora desta função.
+    """
+    data = os.environ.get("GCP_KEY_JSON")
+    if not data:
+        raise RuntimeError("GCP_KEY_JSON ausente nas variáveis de ambiente do Vercel.")
+    info = json.loads(data)
+    return service_account.Credentials.from_service_account_info(info)
 
 
 from fastapi.responses import JSONResponse
@@ -18,10 +32,6 @@ from manage_processor import enable_document_ai_processor, disable_document_ai_p
 
 # Adicionar o diretório pai ao sys.path para importar conecta_google
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from app.conecta_google import configurar_credenciais_google
-
-# Configurar credenciais do Google Cloud
-configurar_credenciais_google()
 
 # --- Pydantic Model for Request Validation ---
 class DocumentRequest(BaseModel):
@@ -101,58 +111,61 @@ def process_document_sample(project_id: str, location: str, processor_id: str, f
 
 # --- FastAPI Endpoint ---
 @app.post("/process_document")
-async def process_document_api(request_data: DocumentRequest):
-    document_url = request_data.document_url
-    additional_text = request_data.additional_text
-
-    if not document_url:
-        return JSONResponse(content={"error": "URL do documento não fornecida"}, status_code=400)
-
-    # Determine mime_type (assuming PDF for now, you might need more sophisticated logic)
-    mime_type = 'application/pdf'
-
+def process_document_api(payload: dict):
     try:
-        # Call the document processing function
-        extracted_data = process_document_sample(project_id, location, processor_id, document_url, mime_type)
+        # 1) Inicializa credenciais SÓ AGORA
+        creds = get_gcp_credentials()
 
-        # Incorporate additional_text (placeholder)
-        response_content = {
-            "status": "Processado",
-            "document_url_recebida": document_url,
-            "texto_adicional_recebido": additional_text,
-            "dados_extraidos": extracted_data
-        }
+        # 2) Cria o(s) cliente(s) Google que você usa
+        # Exemplo Document AI:
+        # client = documentai.DocumentProcessorServiceClient(credentials=creds)
+        # parent = client.processor_path(project_id, location, processor_id)
+        #
+        # 3) Coloque aqui sua LÓGICA atual (o que hoje estava rodando na importação
+        #    ou em funções utilitárias que também chamavam credencial na import)
 
-        return JSONResponse(content=response_content, status_code=200)
+        # TODO: substitua pelo que seu código realmente faz
+        # result = client.process_document(request={...})
 
+        return {"ok": True, "received": payload}
     except Exception as e:
-        return JSONResponse(content={"error": f"Erro ao processar o documento: {e}"}, status_code=500)
-
-# --- Processor Management Endpoints ---
-@app.post("/enable_processor")
-async def enable_processor():
-    try:
-        enable_document_ai_processor(project_id, location, processor_id)
-        return JSONResponse(content={"status": "Processador ativado com sucesso"}, status_code=200)
-    except Exception as e:
-        return JSONResponse(content={"error": f"Erro ao ativar processador: {e}"}, status_code=500)
-
-@app.post("/disable_processor")
-async def disable_processor():
-    try:
-        disable_document_ai_processor(project_id, location, processor_id)
-        return JSONResponse(content={"status": "Processador desativado com sucesso"}, status_code=200)
-    except Exception as e:
-        return JSONResponse(content={"error": f"Erro ao desativar processador: {e}"}, status_code=500)
+        logging.exception("Erro em /process_document")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/processor_status")
-async def get_processor_status_endpoint():
+def get_processor_status_endpoint():
     try:
-        status = get_processor_status(project_id, location, processor_id)
-        return JSONResponse(content=status, status_code=200)
+        # Se o status consulta algo no Google, inicialize aqui:
+        # creds = get_gcp_credentials()
+        # client = documentai.DocumentProcessorServiceClient(credentials=creds)
+        # ... sua lógica de status ...
+        return {"ok": True, "status": "running"}
     except Exception as e:
-        return JSONResponse(content={"error": f"Erro ao obter status do processador: {e}"}, status_code=500)
+        logging.exception("Erro em /processor_status")
+        raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/enable_processor")
+def enable_processor():
+    try:
+        # Se precisar falar com GCP para "habilitar", faça aqui:
+        # creds = get_gcp_credentials()
+        # client = documentai.DocumentProcessorServiceClient(credentials=creds)
+        # ... sua lógica ...
+        return {"ok": True, "processor": "enabled"}
+    except Exception as e:
+        logging.exception("Erro em /enable_processor")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/disable_processor")
+def disable_processor():
+    try:
+        # Se precisar falar com GCP para "desabilitar", faça aqui:
+        # creds = get_gcp_credentials()
+        # client = documentai.DocumentProcessorServiceClient(credentials=creds)
+        # ... sua lógica ...
+        return {"ok": True, "processor": "disabled"}
+    except Exception as e:
+        logging.exception("Erro em /disable_processor")
+        raise HTTPException(status_code=500, detail=str(e))
 # Vercel serverless function handler
-from mangum import Mangum
-handler = Mangum(app)
+
