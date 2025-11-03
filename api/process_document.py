@@ -1,18 +1,19 @@
 # topo do arquivo
 from fastapi import FastAPI, HTTPException
 import os, json, logging
-from google.oauth2 import service_account
 
 app = FastAPI()
 
 @app.get("/")
 def health():
+    print("[HEALTH] OK")     # isto precisa aparecer no log
     return {"ok": True, "where": "/api/process_document"}
 
 def get_gcp_credentials():
     """Lê a credencial da ENV GCP_KEY_JSON e cria Credentials.
        NÃO chama nada de Google fora desta função.
     """
+    from google.oauth2 import service_account
     data = os.environ.get("GCP_KEY_JSON")
     if not data:
         raise RuntimeError("GCP_KEY_JSON ausente nas variáveis de ambiente do Vercel.")
@@ -23,8 +24,6 @@ def get_gcp_credentials():
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import requests
-import json
-import os
 import sys
 from google.cloud import documentai_v1 as documentai
 from google.cloud.documentai_v1 import types
