@@ -1,3 +1,16 @@
+
+from fastapi import FastAPI
+from fastapi.routing import APIRoute
+from typing import List
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    # prova de vida: responde em /api/fast_health
+    return {"ok": True, "where": "/api/fast_health"}
+
+"""//////////////////////////////////////////////
 # topo do arquivo
 from fastapi import FastAPI, HTTPException
 import os, json, logging
@@ -8,7 +21,7 @@ app = FastAPI()
 @app.get("/")
 def health():
     return {"ok": True, "where": "/api/process_document"}
-"""
+
 def get_gcp_credentials():
     # Lê a credencial da ENV GCP_KEY_JSON e cria Credentials. NÃO chama nada de Google fora desta função.
        
