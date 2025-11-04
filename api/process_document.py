@@ -7,8 +7,8 @@ app = FastAPI()
 
 @app.get("/")
 def root():
-    # prova de vida: responde em /api/fast_health
-    return {"ok": True, "where": "/api/fast_health"}
+    # prova de vida: responde em /api/process_document
+    return {"ok": True, "where": "/api/process_document"}
 
 """//////////////////////////////////////////////
 # topo do arquivo
