@@ -15,11 +15,6 @@ def list_routes() -> List[str]:
     # lista todas as rotas que ESTE app enxerga
     return [getattr(r, "path", str(r)) for r in app.router.routes]
 
-# catch-all para debug: se o roteamento do Vercel “mexer” no caminho,
-# você verá aqui qual path realmente chegou ao app.
-@app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
-def echo_path(path: str):
-    return {"received_path": f"/{path}"}
 
 """//////////////////////////////////////////////
 # topo do arquivo
