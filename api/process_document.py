@@ -1,19 +1,36 @@
-
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.routing import APIRoute
 from typing import List
 
 app = FastAPI()
 
+# raiz robusta: aceita "" e "/"
+@app.get("")
 @app.get("/")
 def root():
-    # prova de vida: responde em /api/fast_health
     return {"ok": True, "where": "/api/fast_health"}
 
+# aceita "/routes" com e sem barra final
 @app.get("/routes")
+@app.get("/routes/")
 def list_routes() -> List[str]:
-    # lista todas as rotas que ESTE app enxerga
     return [getattr(r, "path", str(r)) for r in app.router.routes]
+
+# (opcional, mas útil no Vercel) health explícito
+@app.get("/__health")
+def health():
+    return {"ok": True}
+
+# (debug) loga o path recebido – útil se 404 persistir
+@app.middleware("http")
+async def log_path(request: Request, call_next):
+    # isso aparece nos Logs → Functions
+    print(f"[PATH] {request.method} {request.url.path}")
+    return await call_next(request)
+
+@app.get("/api/fast_health")
+def root_prefixed():
+    return {"ok": True, "where": "/api/fast_health (prefixed)"}
 
 
 """//////////////////////////////////////////////
