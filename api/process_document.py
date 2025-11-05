@@ -8,7 +8,7 @@ app = FastAPI()
 @app.get("")
 @app.get("/")
 def root():
-    return {"ok": True, "where": "/api/fast_health"}
+    return {"ok": True, "where": "/api/process_document"}
 
 # aceita "/routes" com e sem barra final
 @app.get("/routes")
@@ -28,9 +28,9 @@ async def log_path(request: Request, call_next):
     print(f"[PATH] {request.method} {request.url.path}")
     return await call_next(request)
 
-@app.get("/api/fast_health")
+@app.get("/api/process_document")
 def root_prefixed():
-    return {"ok": True, "where": "/api/fast_health (prefixed)"}
+    return {"ok": True, "where": "/api/process_document (prefixed)"}
 
 
 """//////////////////////////////////////////////
