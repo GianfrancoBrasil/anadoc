@@ -28,6 +28,10 @@ async def log_path(request: Request, call_next):
     print(f"[PATH] {request.method} {request.url.path}")
     return await call_next(request)
 
+@app.get("/api/process_document")
+def root_prefixed():
+    return {"ok": True, "where 2": "/api/process_document (prefixed)"}
+
 """//////////////////////////////////////////////
 # topo do arquivo
 from fastapi import FastAPI, HTTPException
