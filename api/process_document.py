@@ -13,7 +13,7 @@ def root1():
 
 
 # 2
-@app.get("/api/process_document/__health")
+@app.get("/__health")
 def root2():
     return {"ok": True, "where 2": "/api/process_document/__health"}
     
