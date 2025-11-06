@@ -18,11 +18,6 @@ def root():
 def list_routes() -> List[str]:
     return [getattr(r, "path", str(r)) for r in app.router.routes]
 
-# (opcional, mas útil no Vercel) health explícito
-@app.get("/api/process_document/__health")
-def health():
-    return {"ok": True}
-
 # (debug) loga o path recebido – útil se 404 persistir
 @app.middleware("http")
 async def log_path(request: Request, call_next):
