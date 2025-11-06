@@ -5,27 +5,18 @@ from typing import List
 app = FastAPI()
 
 
-# raiz robusta: aceita "" e "/"
+# 1
 @app.get("/api/process_document")
 @app.get("/api/process_document/")
-@app.get("/api/process_document/__health")
-def root():
+def root1():
     return {"ok": True, "where 1": "/api/process_document"}
 
-# aceita "/routes" com e sem barra final
-@app.get("/routes")
-@app.get("/routes/")
-def list_routes() -> List[str]:
-    return [getattr(r, "path", str(r)) for r in app.router.routes]
 
-# (debug) loga o path recebido – útil se 404 persistir
-@app.middleware("http")
-async def log_path(request: Request, call_next):
-    # isso aparece nos Logs → Functions
-    print(f"[PATH] {request.method} {request.url.path}")
-    return await call_next(request)
-
-
+# 2
+@app.get("/api/process_document/__health")
+def root2():
+    return {"ok": True, "where 2": "/api/process_document/__health"}
+    
 """//////////////////////////////////////////////
 # topo do arquivo
 from fastapi import FastAPI, HTTPException
