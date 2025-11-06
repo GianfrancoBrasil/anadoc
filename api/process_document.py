@@ -5,14 +5,9 @@ from google.oauth2 import service_account
 
 app = FastAPI()
 
-@app.get("/")
-def health():
-    return {"ok": True, "where": "/api/process_document"}
-
 def get_gcp_credentials():
-    """Lê a credencial da ENV GCP_KEY_JSON e cria Credentials.
-       NÃO chama nada de Google fora desta função.
-    """
+    # Lê a credencial da ENV GCP_KEY_JSON e cria Credentials.       NÃO chama nada de Google fora desta função.
+
     data = os.environ.get("GCP_KEY_JSON")
     if not data:
         raise RuntimeError("GCP_KEY_JSON ausente nas variáveis de ambiente do Vercel.")
@@ -166,7 +161,3 @@ async def get_processor_status_endpoint():
         return JSONResponse(content=status, status_code=200)
     except Exception as e:
         return JSONResponse(content={"error": f"Erro ao obter status do processador: {e}"}, status_code=500)
-
-# Vercel serverless function handler
-from mangum import Mangum
-handler = Mangum(app)
