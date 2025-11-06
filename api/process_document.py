@@ -6,8 +6,8 @@ app = FastAPI()
 
 
 # raiz robusta: aceita "" e "/"
-@app.get("")
-@app.get("/")
+@app.get("/api/process_document")
+@app.get("/api/process_document/")
 def root():
     return {"ok": True, "where 1": "/api/process_document"}
 
