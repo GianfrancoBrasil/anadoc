@@ -5,7 +5,7 @@ from typing import List
 app = FastAPI()
 
 # raiz robusta: aceita "" e "/"
-@app.get("/api/process_document")
+@app.get("/")
 def root():
     return {"ok": True, "where 1": "/api/process_document"}
 
