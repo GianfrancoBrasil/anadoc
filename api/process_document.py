@@ -1,3 +1,16 @@
+from fastapi import FastAPI, Request
+from fastapi.routing import APIRoute
+from typing import List
+
+app = FastAPI()
+
+# raiz robusta: aceita "" e "/"
+@app.get("")
+@app.get("/")
+def root():
+    return {"ok": True, "where 1": "/api/process_document"}
+
+"""
 # topo do arquivo
 from fastapi import FastAPI, HTTPException
 import os, json, logging
@@ -169,3 +182,5 @@ async def get_processor_status_endpoint():
 # Vercel serverless function handler
 from mangum import Mangum
 handler = Mangum(app)
+
+"""
