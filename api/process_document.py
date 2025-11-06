@@ -13,7 +13,7 @@ def list_routes() -> List[str]:
     return [getattr(r, "path", str(r)) for r in app.router.routes]
 
 # (opcional, mas útil no Vercel) health explícito
-@app.get("/__health")
+@app.get("/api/process_document/__health")
 def health():
     return {"ok": True}
 
