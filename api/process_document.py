@@ -1,23 +1,3 @@
-from fastapi import FastAPI, Request
-from fastapi.routing import APIRoute
-from typing import List
-
-app = FastAPI()
-
-
-# 1
-@app.get("/api/process_document")
-@app.get("/api/process_document/")
-def root1():
-    return {"ok": True, "where 1": "/api/process_document"}
-
-
-# 2
-@app.get("/__health")
-def root2():
-    return {"ok": True, "where 2": "/api/process_document/__health"}
-    
-"""//////////////////////////////////////////////
 # topo do arquivo
 from fastapi import FastAPI, HTTPException
 import os, json, logging
@@ -189,4 +169,3 @@ async def get_processor_status_endpoint():
 # Vercel serverless function handler
 from mangum import Mangum
 handler = Mangum(app)
-"""
