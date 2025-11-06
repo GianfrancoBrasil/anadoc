@@ -5,9 +5,9 @@ from typing import List
 app = FastAPI()
 
 # raiz robusta: aceita "" e "/"
-@app.get("/")
+@app.get("/x")
 def root():
-    return {"ok": True, "where 1": "/api/process_document"}
+    return {"ok": True, "where 2": "/api/process_document"}
 
 """
 # topo do arquivo
