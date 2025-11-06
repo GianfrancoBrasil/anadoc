@@ -5,6 +5,11 @@ from typing import List
 app = FastAPI()
 
 
+# raiz robusta: aceita "" e "/"
+@app.get("")
+@app.get("/")
+def root():
+    return {"ok": True, "where 1": "/api/process_document"}
 
 # aceita "/routes" com e sem barra final
 @app.get("/routes")
